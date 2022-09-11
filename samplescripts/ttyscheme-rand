@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# apply random colorscheme
+
+colors=($(ttyscheme -l))
+sel="${colors[$((RANDOM % ${#colors[@]}))]}"
+ttyscheme -s "$sel"
+echo "$sel"

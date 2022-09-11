@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# shift through available ttyscheme schemes
+
+colors=($(ttyscheme -l))
+colorsmaxind="$((${#colors[@]}-1))"
+i=0
+
+while true; do
+    col="${colors[$i]}"
+    ttyscheme -s "$col"
+    echo "press h,l to cycle through color schemes"
+    echo "${i}: ${col}"
+    read -rsn1
+    case "$REPLY" in
+	l) [[ $i -lt $colorsmaxind ]] && ((++i)) ;;
+	h) [[ $i -gt 0 ]] && ((--i)) ;;
+	*) exit ;;
+    esac
+done

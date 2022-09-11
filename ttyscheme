@@ -1,0 +1,263 @@
+#!/bin/sh
+
+###########################################################
+# ttyscheme - customize tty with curated color schemes	  #
+#							  #
+# credit to the following projects and their contributers #
+#     https://mayccoll.github.io/Gogh/			  #
+#     https://windowsterminalthemes.dev/		  #
+#     https://emacsthemes.com/				  #
+#     https://terminalsplash.com/			  #
+#							  #
+# reverting to default cga palette: 'ttyscheme cga'	  #
+###########################################################
+
+help_text () {
+    while IFS= read -r line; do
+	echo "$line"
+    done <<EOF
+Usage: ttyscheme [FLAGS] [COLORSCHEME]
+	-l	list color schemes
+	-p	output command to manually apply scheme
+	-a	display a color array
+	-s	display a simple color array
+	-h	print this help text
+EOF
+}
+
+while getopts 'plash' opt; do
+    case "$opt" in
+	p) TTYSCHEME_PRINT=1 ;;
+	l) TTYSCHEME_LIST=1 ;;
+	a) TTYSCHEME_ARRAY=1 ;;
+	s) TTYSCHEME_ARRAY_SIMPLE=1 ;;
+	h) help_text; exit 0 ;;
+	*) exit 1 ;;
+    esac
+done
+shift $((OPTIND-1))
+
+#                   N: black    red    green  yellow   blue   magenta  cyan    white  B: black    red    green  yellow   blue   magenta  cyan    white   
+COLORS='3024night=    #090300 #db2d20 #01a252 #fded02 #01a0e4 #a16a94 #b5e4f4 #a5a2a2   #5c5855 #e8bbd0 #3a3432 #4a4543 #807d7c #d6d5d4 #cdab53 #f7f7f7
+3024day=              #f7f7f7 #db2d20 #01a252 #fded02 #01a0e4 #a16a94 #b5e4f4 #a5a2a2   #5c5855 #e8bbd0 #3a3432 #4a4543 #807d7c #d6d5d4 #cdab53 #090300
+aci=                  #0d1926 #ff0883 #83ff08 #ff8308 #0883ff #8308ff #08ff83 #b6b6b6   #424242 #ff1e8e #8eff1e #ff8e1e #1e8eff #8e1eff #1eff8e #c2c2c2
+adventuretime=        #1f1d45 #bd0013 #4ab118 #e7741e #0f4ac6 #665993 #70a598 #f8dcc0   #4e7cbf #fc5f5a #9eff6e #efc11a #1997c6 #9b5953 #c8faf4 #f6f5fb
+afterglow=            #333333 #a53c23 #7b9246 #d3a04d #6c99bb #9f4e85 #7dd6cf #d0d0d0   #505050 #a53c23 #7b9246 #d3a04d #547c99 #9f4e85 #7dd6cf #f5f5f5
+alienblood=           #0f1610 #7f2b27 #2f7e25 #717f24 #2f6a7f #47587f #327f77 #647d75   #3c4812 #e08009 #18e000 #bde000 #00aae0 #0058e0 #00e0c4 #73fa91
+argonaut=             #0e1019 #ff000f #8ce10b #ffb900 #008df8 #6d43a6 #00d8eb #ffffff   #444444 #ff2740 #abe15b #ffd242 #0092ff #9a5feb #67fff0 #ffffff
+ateliersulphurpool=   #202746 #c94922 #ac9739 #c08b30 #3d8fd1 #6679cc #22a2c9 #979db4   #6b7394 #c76b29 #293256 #5e6687 #898ea4 #dfe2f1 #9c637a #f5f7ff
+atom=                 #161719 #fd5ff1 #87c38a #ffd7b1 #85befd #b9b6fc #85befd #e0e0e0   #000000 #fd5ff1 #94fa36 #f5ffa8 #96cbfe #b9b6fc #85befd #e0e0e0
+aura=                 #15141b #ff6767 #61ffca #ffca85 #a277ff #a277ff #61ffca #edecee   #6d6d6d #ffca85 #a277ff #ffca85 #a277ff #a277ff #61ffca #edecee
+aurelia=              #1a1a1a #e92888 #4ec9b0 #ce9178 #579bd5 #714896 #00b6d6 #ea549f   #797979 #eb2a88 #1ad69c #e9ad95 #9cdcfe #975eab #2bc4e2 #eaeaea
+aurora=               #263238 #ff516d #9fc59f #ffcb6b #82b1ff #c792ea #74cbc4 #cdd3d3   #4c566a #f77669 #c2e982 #ffc400 #a2c1ff #d4aecd #94ebe4 #ffffff
+belafonte_day=        #d5ccba #be100e #858162 #eaa549 #426a79 #97522c #989a9c #20111b   #5e5252 #be100e #858162 #eaa549 #426a79 #97522c #989a9c #d5ccba
+belafonte_night=      #20111b #be100e #858162 #eaa549 #426a79 #97522c #989a9c #968c83   #5e5252 #be100e #858162 #eaa549 #426a79 #97522c #989a9c #d5ccba
+birdsofparadise=      #2a1f1d #be2d26 #6ba18a #e99d2a #5a86ad #ac80a6 #74a6ad #e0dbb7   #9b6c4a #e84627 #95d8ba #d0d150 #b8d3ed #d19ecb #93cfd7 #fff9d5
+bluedolphin=          #006984 #ff8288 #b4e88d #f4d69f #82aaff #e9c1ff #89ebff #c5f2ff   #434758 #ff8b92 #ddffa7 #ffe585 #9cc4ff #ddb0f6 #a3f7ff #ffffff
+bluloco_light=        #d5d6dd #d52753 #23974a #df631c #275fe4 #823ff1 #27618d #000000   #e4e5ed #ff6480 #3cbc66 #c5a332 #0099e1 #ce33c0 #6d93bb #26272d
+borland=              #0000a4 #ff6c60 #a8ff60 #ffffb6 #96cbfe #ff73fd #c6c5fe #eeeeee   #7c7c7c #ffb6b0 #ceffac #ffffcc #b5dcff #ff9cfe #dfdffe #ffffff
+breeze=               #31363b #ed1515 #11d116 #f67400 #1d99f3 #9b59b6 #1abc9c #eff0f1   #7f8c8d #c0392b #1cdc9a #fdbc4b #3daee9 #8e44ad #16a085 #fcfcfc
+broadcast=            #2b2b2b #da4939 #519f50 #ffd24a #6d9cbe #d0d0ff #6e9cbe #ffffff   #000000 #ff7b6b #83d182 #ffff7c #9fcef0 #ffffff #a0cef0 #ffffff
+c64=                  #18183d #883932 #55a049 #bfce72 #40318d #8b3f96 #67b6bd #7869c4   #090300 #c87972 #95e099 #fffea2 #8071cd #cb7fd6 #a7f6fd #c0cec0
+cga=                  #000000 #aa0000 #00aa00 #aa5500 #0000aa #aa00aa #00aaaa #aaaaaa   #555555 #ff5555 #55ff55 #ffff55 #5555ff #ff55ff #55ffff #ffffff
+chalk=                #2b2d2e #b23a52 #789b6a #b9ac4a #2a7fac #bd4f5a #44a799 #d2d8d9   #888888 #f24840 #80c470 #ffeb62 #4196ff #fc5275 #53cdbd #d2d8d9
+chameleon=            #2c2c2c #cc231c #689d69 #d79922 #366b71 #4e5165 #458587 #c8bb97   #777777 #cc231c #689d69 #d79922 #366b71 #4e5165 #458587 #c8bb97
+ciapre=               #181818 #810009 #48513b #cc8b3f #576d8c #724d7c #5c4f4b #aea47f   #555555 #ac3835 #a6a75d #dcdf7c #3097c6 #d33061 #f3dbb2 #f4f4f5
+clrs=                 #fafbfc #f8282a #328a5d #fa701d #135cd0 #9f00bd #33c3c1 #000000   #555753 #fb0416 #2cc631 #fdd727 #1670ff #e900b0 #3ad5ce #eeeeec
+cobalt_neon=          #142838 #ff2320 #3ba5ff #e9e75c #8ff586 #781aa0 #8ff586 #8ff586   #fff688 #d4312e #8ff586 #e9f06d #3c7dd2 #8230a7 #6cbc67 #8ff586
+cyberpunk=            #332a57 #ff7092 #00fbac #fffa6a #00bfff #df95ff #86cbfe #e5e5e5   #000000 #ff8aa4 #21f6bc #fff787 #1bccfd #e6aefe #99d6fc #ffffff
+darkmatrix=           #070c0e #006536 #6fa64c #7e8000 #2c9a84 #452d53 #114d53 #3e5715   #333333 #00733d #90d762 #e2e500 #46d8b8 #4a3059 #12545a #006536
+dehydration=          #333333 #ff5555 #5fd38d #ff9955 #3771c8 #bc5fd3 #5fd3bc #999999   #666666 #ff8080 #87deaa #ffb380 #5f8dd3 #cd87de #87decd #cccccc
+desert=               #333333 #ff2b2b #98fb98 #f0e68c #cd853f #ffdead #ffa0a0 #f5deb3   #555555 #ff5555 #55ff55 #ffff55 #87ceff #ff55ff #ffd700 #ffffff
+dimmed_monokai=       #1f1f1f #be3f48 #879a3b #c5a635 #4f76a1 #855c8d #578fa4 #b9bcba   #888987 #fb001f #0f722f #c47033 #186de3 #fb0067 #2e706d #fdffb9
+doomone=              #282c34 #ff6c6b #98be65 #ecbe7b #a9a1e1 #c678dd #51afef #bbc2cf   #000000 #ff6655 #99bb66 #ecbe7b #a9a1e1 #c678dd #51afef #bfbfbf
+dotgov=               #262c35 #bf091d #3d9751 #f6bb34 #17b2e0 #7830b0 #8bd2ed #ebebeb   #191919 #bf091d #3d9751 #f6bb34 #17b2e0 #7830b0 #8bd2ed #ffffff
+earthsong=            #292520 #c94234 #85c54c #f5ae2e #1398b9 #d0633d #509552 #e5c6aa   #675f54 #ff645a #98e036 #e0d561 #5fdaff #ff9269 #84f088 #f6f7ec
+elemental=            #22211d #98290f #479a43 #7f7111 #497f7d #7f4e2f #387f58 #807974   #555445 #e0502a #61e070 #d69927 #79d9d9 #cd7c54 #59d599 #fff1e9
+elementary=           #101010 #e1321a #6ab017 #ffc005 #004f9e #ec0048 #2aa7e7 #f2f2f2   #5d5d5d #ff361e #7bc91f #ffd00a #0071ff #ff1d62 #4bb8fd #a020f0
+fairyfloss=           #5a5475 #a8757b #ff857f #e6c000 #ae81ff #716799 #c2ffdf #f8f8f2   #75507b #ffb8d1 #f1568e #d5a425 #c5a3ff #8077a8 #c2ffff #f8f8f0
+fairyfloss_dark=      #42395d #a8757b #ff857f #e6c000 #ae81ff #716799 #c2ffdf #f8f8f2   #75507b #ffb8d1 #f1568e #d5a425 #c5a3ff #8077a8 #c2ffff #f8f8f0
+fishtank=             #232537 #c6004a #acf157 #fecd5e #525fb8 #986f82 #968763 #ecf0fc   #6c5b30 #da4b8a #dbffa9 #fee6a9 #b2befa #fda5cd #a5bd86 #f6ffec
+flat=                 #1f2d3a #c0392b #27ae60 #f39c12 #2980b9 #8e44ad #16a085 #bdc3c7   #34495e #e74c3c #2ecc71 #f1c40f #3498db #9b59b6 #2aa198 #ecf0f1
+floraverse=           #0e0d15 #64002c #5d731a #cd751c #1d6da1 #b7077e #42a38c #dbd1b9   #331e4d #d02063 #b4ce59 #fac357 #40a4cf #f12aae #62caa8 #fff5db
+foxnightly=           #2a2a2e #b98eff #ff7de9 #729fcf #66a05b #75507b #acacae #ffffff   #a40000 #bf4040 #66a05b #ffb86c #729fcf #8f5902 #c4a000 #5c3566
+frontend_delight=     #1b1c1d #f8511b #565747 #fa771d #2c70b7 #f02e4f #3ca1a6 #adadad   #5fac6d #f74319 #74ec4c #fdc325 #3393ca #e75e4f #4fbce6 #8c735b
+frontend_forrest=     #251200 #d6262b #919c00 #be8a13 #4699a3 #8d4331 #da8213 #ddc265   #7f6a55 #e55a1c #bfc65a #ffcb1b #7cc9cf #d26349 #e6a96b #ffeaa3
+frontend_galaxy=      #1d2837 #f9555f #21b089 #fef02a #589df6 #944d95 #1f9ee7 #bbbbbb   #555555 #fa8c8f #35bb9a #ffff55 #589df6 #e75699 #3979bc #ffffff
+geohot=               #1f1e1f #cc0000 #f9f5f5 #ada110 #ff004e #75507b #06919a #ffffff   #555753 #ef2929 #ff0000 #ada110 #5f4aa6 #b74438 #408f0c #ffffff
+github=               #fcfdfe #970b16 #07962a #f8eec7 #003e8a #e94691 #89d1ec #3e3e3e   #666666 #de0000 #87d5a2 #f1d007 #2e6cba #ffa29f #1cfafe #2e2e2e
+gogh=                 #292d3e #f07178 #62de84 #ffcb6b #75a1ff #f580ff #60baec #abb2bf   #959dcb #f07178 #c3e88d #ff5572 #82aaff #ffcb6b #676e95 #fffefe
+gooey=                #0d101b #bb4f6c #72ccae #c65e3d #58b6ca #6488c4 #8d84c6 #858893   #1f222d #ee829f #a5ffe1 #f99170 #8be9fd #97bbf7 #c0b7f9 #ffffff
+gotham=               #0a0f14 #c33027 #26a98b #edb54b #195465 #4e5165 #33859d #98d1ce   #10151b #d26939 #081f2d #245361 #093748 #888ba5 #599caa #d3ebe9
+grape=                #171423 #ed2261 #1fa91b #8ddc20 #487df4 #8d35c9 #3bdeed #9e9ea0   #59516a #f0729a #53aa5e #b2dc87 #a9bcec #ad81c2 #9de3eb #a288f7
+grass=                #13773d #bb0000 #00bb00 #e7b000 #0000a3 #950062 #00bbbb #bbbbbb   #000000 #bb0000 #00bb00 #e7b000 #0000bb #ff55ff #55ffff #ffffff
+gruvbox=              #fbf1c7 #cc241d #98971a #d79921 #458588 #b16286 #689d6a #7c6f64   #928374 #9d0006 #79740e #b57614 #076678 #8f3f71 #427b58 #3c3836
+gruvbox_dark=         #282828 #cc241d #98971a #d79921 #458588 #b16286 #689d6a #a89984   #928374 #fb4934 #b8bb26 #fabd2f #83a598 #d3869b #8ec07c #ebdbb2
+hax0r_blue=           #010515 #10b6ff #10b6ff #10b6ff #10b6ff #10b6ff #10b6ff #11b7ff   #080117 #00b3f7 #00b3f7 #00b3f7 #00b3f7 #00b3f7 #00b3f7 #fefefe
+hax0r_gr33n=          #020f01 #15d00d #15d00d #15d00d #15d00d #15d00d #15d00d #16b10e   #001510 #19e20e #19e20e #19e20e #19e20e #19e20e #19e20e #fefefe
+hax0r_r3d=            #200101 #b00d0d #b00d0d #b00d0d #b00d0d #b00d0d #b00d0d #b10e0e   #150000 #ff1111 #ff1010 #ff1010 #ff1010 #ff1010 #ff1010 #fefefe
+highway=              #222225 #d00e18 #138034 #ffcb3e #006bb3 #6b2775 #384564 #ededed   #5d504a #f07e18 #b1d130 #fff120 #4fc2fd #de0071 #5d504a #ffffff
+hivacruz=             #132638 #c94922 #ac9739 #c08b30 #3d8fd1 #6679cc #22a2c9 #ede4e4   #6b7394 #c76b29 #73ad43 #5e6687 #898ea4 #dfe2f1 #9c637a #f5f7ff
+hopscotch=            #322931 #dd464c #8fc13e #fdcc59 #1290bf #c85e7c #149b93 #b9b5b8   #797379 #fd8b19 #433b42 #5c545b #989498 #d5d3d5 #b33508 #ffffff
+horizon=              #1c1e26 #E95678 #29D398 #FAB795 #26BBD9 #EE64AC #59E1E3 #bdc0c2   #848484 #EC6A88 #3FDAA4 #FBC3A7 #3FC4DE #F075B5 #6BE4E6 #e5e5e5
+hybrid=               #141414 #a54242 #8c9440 #de935f #5f819d #85678f #5e8d87 #969896   #373b41 #cc6666 #b5bd68 #f0c674 #81a2be #b294bb #8abeb7 #c5c8c6
+ibm3270=              #000000 #f01818 #24d830 #f0d824 #7890f0 #f078d8 #54e4e4 #a5a5a5   #888888 #ef8383 #7ed684 #efe28b #b3bfef #efb3e3 #9ce2e2 #ffffff
+ibm3270_hc=           #000000 #ff0000 #00ff00 #ffff00 #00bfff #ffc0cb #40e0d0 #bebebe   #414141 #ffa500 #98fb98 #ffff00 #0000cd #a020f0 #aeeeee #ffffff
+iceberg_dark=         #161821 #e27878 #b4be82 #e2a478 #84a0c6 #a093c7 #89b8c2 #c6c8d1   #6b7089 #e98989 #c0ca8e #e9b189 #91acd1 #ada0d3 #95c4ce #d2d4de
+iceberg_light=        #e8e9ec #cc517a #668e3d #c57339 #2d539e #7759b4 #3f83a6 #33374c   #8389a3 #cc3768 #598030 #b6662d #22478e #6845ad #327698 #262a3f
+icgreenppl=           #3a3d3f #fb002a #339c24 #659b25 #149b45 #53b82c #2cb868 #e0ffef   #032710 #a7ff3f #9fff6d #d2ff6d #72ffb5 #50ff3e #22ff71 #daefd0
+icorangeppl=          #262626 #c13900 #a4a900 #caaf00 #bd6d00 #fc5e00 #f79500 #ffc88a   #6a4f2a #ff8c68 #f6ff40 #ffe36e #ffbe55 #fc874f #c69752 #fafaff
+idletoes=             #323232 #d25252 #7fe173 #ffc66d #4099ff #f680ff #bed6ff #eeeeec   #535353 #f07070 #9dff91 #ffe48b #5eb7f7 #ff9dff #dcf4ff #ffffff
+jackiebrown=          #2c1d16 #ef5734 #2baf2b #bebf00 #246eb2 #d05ec1 #00acee #bfbfbf   #666666 #e50000 #86a93e #e5e500 #0000ff #e500e5 #00e5e5 #e5e5e5
+japanesque=           #1e1e1e #cf3f61 #7bb75b #e9b32a #4c9ad4 #a57fc4 #389aad #fafaf6   #595b59 #d18fa6 #767f2c #78592f #135979 #604291 #76bbca #b2b5ae
+jubi=                 #262b33 #cf7b98 #90a94b #6ebfc0 #576ea6 #bc4f68 #75a7d2 #c3d3de   #a874ce #de90ab #bcdd61 #87e9ea #8c9fcd #e16c87 #b7c9ef #d5e5f1
+laserwave=            #39243a #eb64b9 #afd686 #feae87 #40b4c4 #b381c5 #215969 #91889b   #716485 #fc2377 #50fa7b #ffe261 #74dfc4 #6d75e0 #b4dce7 #ffffff
+lunaria_dark=         #36464e #846560 #809984 #a79a79 #555673 #866c83 #7e98b4 #caced8   #404f56 #bb928b #bfdcc2 #f1dfb6 #777798 #bf9db9 #bddcff #dfe2ed
+lunaria_light=        #d5cfcc #783c1f #497d46 #8f750b #3f3566 #793f62 #3778a9 #3e3c3d   #484646 #b06240 #7bc175 #dcb735 #5c4f89 #b56895 #64baff #ebe4e1
+maia=                 #31363b #ba2922 #7e807e #4c4f4d #16a085 #43746a #00cccc #e0e0e0   #282928 #cc372c #8d8f8d #4e524f #13bf9d #487d72 #00d1d1 #e8e8e8
+manpage=              #fef49c #cc0000 #00a600 #999900 #0000b2 #b200b2 #00a6b2 #000000   #666666 #e50000 #00d900 #e5e500 #0000ff #e500e5 #00e5e5 #999999
+mar=                  #f8f8f8 #b5407b #7bb540 #b57b40 #407bb5 #7b40b5 #40b57b #000000   #737373 #cd73a0 #a0cd73 #cda073 #73a0cd #a073cd #73cda0 #ffffff
+mathias=              #000000 #e52222 #a6e32d #fc951e #c48dff #fa2573 #67d9f0 #f2f2f2   #555555 #ff5555 #55ff55 #ffff55 #5555ff #ff55ff #55ffff #ffffff
+mirage=               #1b2738 #ff9999 #85cc95 #ffd700 #7fb5ff #ddb3ff #21c7a8 #a6b2c0   #575656 #ff9999 #85cc95 #ffd700 #7fb5ff #ddb3ff #85cc95 #ffffff
+misterioso=           #2d3743 #ff4242 #74af68 #ffad29 #338f86 #9414e6 #23d7d7 #e1e1e0   #555555 #ff3242 #74cd68 #ffb929 #23d7d7 #ff37ff #00ede1 #ffffff
+miu=                  #0d1926 #b87a7a #7ab87a #b8b87a #7a7ab8 #b87ab8 #7ab8b8 #d9d9d9   #262626 #dbbdbd #bddbbd #dbdbbd #bdbddb #dbbddb #bddbdb #ffffff
+molokai=              #1b1d1e #7325fa #23e298 #60d4df #d08010 #ff0087 #d0a843 #bbbbbb   #555555 #9d66f6 #5fe0b1 #6df2ff #ffaf00 #ff87af #ffce51 #ffffff
+monalisa=             #120b0d #9b291c #636232 #c36e28 #515c5d #9b1d29 #588056 #f7d75c   #874228 #ff4331 #b4b264 #ff9566 #9eb2b4 #ff5b6a #8acd8f #ffe598
+mono_amber=           #2b1900 #ff9400 #ff9400 #ff9400 #ff9400 #ff9400 #ff9400 #ff9400   #402500 #ff9400 #ff9400 #ff9400 #ff9400 #ff9400 #ff9400 #ff9400
+mono_cyan=            #00222b #00ccff #00ccff #00ccff #00ccff #00ccff #00ccff #00ccff   #003340 #00ccff #00ccff #00ccff #00ccff #00ccff #00ccff #00ccff
+mono_green=           #022b00 #0bff00 #0bff00 #0bff00 #0bff00 #0bff00 #0bff00 #0bff00   #034000 #0bff00 #0bff00 #0bff00 #0bff00 #0bff00 #0bff00 #0bff00
+mono_red=             #2b0c00 #ff3600 #ff3600 #ff3600 #ff3600 #ff3600 #ff3600 #ff3600   #401200 #ff3600 #ff3600 #ff3600 #ff3600 #ff3600 #ff3600 #ff3600
+mono_white=           #262626 #fafafa #fafafa #fafafa #fafafa #fafafa #fafafa #fafafa   #3b3b3b #fafafa #fafafa #fafafa #fafafa #fafafa #fafafa #fafafa
+mono_yellow=          #2b2400 #ffd300 #ffd300 #ffd300 #ffd300 #ffd300 #ffd300 #ffd300   #403500 #ffd300 #ffd300 #ffd300 #ffd300 #ffd300 #ffd300 #ffd300
+monokai_pro=          #363537 #ff6188 #a9dc76 #ffd866 #fc9867 #ab9df2 #78dce8 #fdf9f3   #908e8f #ff6188 #a9dc76 #ffd866 #fc9867 #ab9df2 #78dce8 #fdf9f3
+morada=               #211f46 #0f49c4 #48b117 #e87324 #bc0116 #665b93 #70a699 #f5dcbe   #4f7cbf #1c96c7 #3bff6f #efc31c #fb605b #975b5a #1eff8e #f6f5fb
+n0tch2k=              #222222 #a95551 #666666 #a98051 #657d3e #767676 #c9c9c9 #d0b8a3   #474747 #a97775 #8c8c8c #a99175 #98bd5e #a3a3a3 #dcdcdc #d8c8bb
+nightowlish_light=    #ffffff #d3423e #2aa298 #daaa01 #4876d6 #403f53 #08916a #403f53   #7a8181 #f76e6e #49d0c5 #dac26b #5ca7e4 #697098 #00c990 #989fb1
+nightowl=             #011627 #ef5350 #22da6e #addb67 #82aaff #c792ea #21c7a8 #ffffff   #575656 #ef5350 #22da6e #ffeb95 #82aaff #c792ea #7fdbca #ffffff
+nord=                 #2e3440 #bf616a #a3be8c #ebcb8b #81a1c1 #b48ead #88c0d0 #d8dee9   #4c566a #bf616a #a3be8c #ebcb8b #81a1c1 #b48ead #8fbcbb #eceff4
+nord_light=           #e5e9f0 #bf616a #a3be8c #ebcb8b #81a1c1 #b48ead #88c0d0 #414858   #4c566a #bf616a #a3be8c #ebcb8b #81a1c1 #b48ead #8fbcbb #eceff4
+novel=                #dfdbc3 #cc0000 #009600 #d06b00 #0000cc #cc00cc #0087cc #000000   #808080 #cc0000 #009600 #d06b00 #0000cc #cc00cc #0087cc #ffffff
+obsidian=             #283033 #a60001 #00bb00 #fecd22 #3a9bdb #bb00bb #00bbbb #bbbbbb   #000000 #ff0003 #93c863 #fef874 #a1d7ff #ff55ff #55ffff #ffffff
+ocean=                #224fbc #990000 #00a600 #999900 #0000b2 #b200b2 #00a6b2 #bfbfbf   #000000 #e50000 #00d900 #e5e500 #0000ff #e500e5 #00e5e5 #e5e5e5
+ocean_dark=           #1c1f27 #af4b57 #afd383 #e5c079 #7d90a4 #a4799d #85a6a5 #eeedee   #7b7b7b #af4b57 #ceffab #fffecc #b5dcfe #fb9bfe #dfdffd #fefffe
+oceanicnext=          #121c21 #e44754 #89bd82 #f7bd51 #5486c0 #b77eb8 #50a5a4 #ffffff   #52606b #e44754 #89bd82 #f7bd51 #5486c0 #b77eb8 #50a5a4 #ffffff
+ollie=                #222125 #ac2e31 #31ac61 #ac4300 #2d57ac #b08528 #1fa6ac #8a8eac   #5b3725 #ff3d48 #3bff99 #ff5e1e #4488ff #ffc21d #1ffaff #5b6ea7
+palenight=            #292d3e #f07178 #c3e88d #ffcb6b #82aaff #c792ea #60adec #abb2bf   #959dcb #f07178 #c3e88d #ff5572 #82aaff #ffcb6b #676e95 #fffefe
+panda=                #1f1f20 #fb055a #26ffd4 #fdaa5a #5c9fff #fc59a6 #26ffd4 #f0f0f0   #5c6370 #fb055a #26ffd4 #febe7e #55adff #fd95d0 #26ffd4 #f0f0f0
+pandora=              #141e43 #ff4242 #74af68 #ffad29 #338f86 #9414e6 #23d7d7 #e1e1e1   #3f5648 #ff3242 #74cd68 #ffb929 #23d7d7 #ff37ff #00ede1 #ffffff
+papercolor_dark=      #1c1c1c #af005f #5faf00 #d7af5f #5fafd7 #808080 #d7875f #d0d0d0   #585858 #5faf5f #afd700 #af87d7 #ffaf00 #ff5faf #00afaf #5f8787
+papercolor_light=     #eeeeee #af0000 #008700 #5f8700 #0087af #878787 #005f87 #444444   #bcbcbc #d70000 #d70087 #8700af #d75f00 #d75f00 #005faf #005f87
+paraiso_dark=         #2f1e2e #ef6155 #48b685 #fec418 #06b6ef #815ba4 #5bc4bf #a39e9b   #776e71 #ef6155 #48b685 #fec418 #06b6ef #815ba4 #5bc4bf #e7e9db
+pixiefloss=           #241f33 #ff857f #48b685 #e6c000 #ae81ff #ef6155 #c2ffdf #f8f8f2   #75507b #f1568e #5adba2 #d5a425 #c5a3ff #ef6155 #c2ffff #f8f8f0
+powershell=           #052454 #7e0008 #098003 #c4a000 #010083 #d33682 #0e807f #c1c2c3   #000000 #ef2929 #1cfe3c #fefe45 #268ad2 #fe13fa #29fffe #7f7c7f
+pro=                  #000000 #990000 #00a600 #999900 #2009db #b200b2 #00a6b2 #bfbfbf   #666666 #e50000 #00d900 #e5e500 #0000ff #e500e5 #00e5e5 #e5e5e5
+rapture=              #111e2a #fc644d #7afde1 #fff09b #6c9bf5 #ff4fa1 #64e0ff #c0c9e5   #304b66 #fc644d #7afde1 #fff09b #6c9bf5 #ff4fa1 #64e0ff #ffffff
+redalert=             #762423 #d62e4e #71be6b #beb86b #489bee #e979d7 #6bbeb8 #ffffff   #262626 #e02553 #aff08c #dfddb7 #65aaf1 #ddb7df #b7dfdd #ffffff
+redplanet=            #222222 #8c3432 #728271 #e8bf6a #69819e #896492 #5b8390 #c2b790   #676767 #b55242 #869985 #ebeb91 #60827e #de4974 #38add8 #d6bfb8
+redsands=             #7a251e #ff3f00 #00bb00 #e7b000 #0072ff #bb00bb #00bbbb #bbbbbb   #555555 #bb0000 #00bb00 #e7b000 #0072ae #ff55ff #55ffff #ffffff
+relaxed=              #353a44 #bc5653 #909d63 #ebc17a #6a8799 #b06698 #c9dfff #d9d9d9   #636363 #bc5653 #a0ac77 #ebc17a #7eaac7 #b06698 #acbbd0 #f7f7f7
+retro=                #000000 #13a10e #13a10e #13a10e #13a10e #13a10e #13a10e #13a10e   #16ba10 #16ba10 #16ba10 #16ba10 #16ba10 #16ba10 #16ba10 #16ba10
+royal=                #100815 #91284c #23801c #b49d27 #6580b0 #674d96 #8aaabe #524966   #312d3d #d5356c #2cd946 #fde83b #90baf9 #a479e3 #acd4eb #9e8cbd
+ryuuko=               #2c3941 #966f6b #76a08d #c1b9a0 #7a9ea5 #c19a83 #98c2bc #ececec   #5d7079 #c69f9b #a6d0bd #f1e9d0 #aaced5 #f1cab3 #c8f2ec #fcfcfc
+sakura=               #18131e #d52370 #41af1a #bc7053 #6964ab #c71fbf #939393 #dd7bdc   #786d69 #f41d99 #22e529 #f59574 #9892f1 #e90cdd #eeeeee #cbb6ff
+seafoampastel=        #243435 #825d4d #728c62 #ada16d #4d7b82 #8a7267 #729494 #e0e0e0   #8a8a8a #cf937a #98d9aa #fae79d #7ac3cf #d6b2a1 #ade0e0 #e0e0e0
+seashells=            #09141b #d15123 #027c9b #fca02f #1e4950 #68d4f1 #50a3b5 #deb88d   #434b53 #d48678 #628d98 #fdd39f #1bbcdd #bbe3ee #87acb4 #fee4ce
+slate=                #222222 #e2a8bf #81d778 #c4c9c0 #264b49 #a481d3 #15ab9c #02c5e0   #ffffff #ffcdd9 #beffa8 #d0ccca #7ab0d2 #c5a7d9 #8cdfe0 #e0e0e0
+solarized_darcula=    #3d3f41 #f24840 #629655 #b68800 #2075c7 #797fd4 #15968d #d2d8d9   #25292a #f24840 #629655 #b68800 #2075c7 #797fd4 #15968d #d2d8d9
+solarized_dark=       #002b36 #dc322f #859900 #cf9a6b #268bd2 #d33682 #2aa198 #eee8d5   #657b83 #d87979 #88cf76 #657b83 #2699ff #d33682 #43b8c3 #fdf6e3
+solarized_light=      #fdf6e3 #dc322f #859900 #b58900 #268bd2 #d33682 #2aa198 #073642   #002b36 #cb4b16 #586e75 #657b83 #839496 #6c71c4 #93a1a1 #fdf6e3
+sonoransunrise=       #f9fae3 #eb6f6f #669c50 #f2c55c #227b4d #7189d9 #e07941 #61543e   #d9dac3 #fb7f7f #86ac70 #d2a53c #429b6d #91a9f9 #f08951 #867e6b
+spacedust=            #0a1e24 #6e5346 #5cab96 #e3cd7b #0f548b #e35b00 #06afc7 #f0f1ce   #684c31 #ff8a3a #aecab8 #ffc878 #67a0ce #ff8a3a #83a7b4 #fefff1
+spacegray=            #20242d #b04b57 #87b379 #e5c179 #7d8fa4 #a47996 #85a7a5 #b3b8c3   #000000 #b04b57 #87b379 #e5c179 #7d8fa4 #a47996 #85a7a5 #ffffff
+sublette=             #202535 #ee5577 #55ee77 #ffdd88 #5588ff #ff77cc #44eeee #ccced0   #405570 #ee6655 #99ee77 #ffff77 #77bbff #aa88ff #55ffbb #ffffee
+sundried=             #1a1818 #a7463d #587744 #9d602a #485b98 #864651 #9c814f #c9c9c9   #4d4e48 #aa000c #128c21 #fc6a21 #7999f7 #fd8aa1 #fad484 #ffffff
+terminix_dark=        #091116 #a54242 #a1b56c #de935f #225555 #85678f #5e8d87 #777777   #373b41 #c63535 #608360 #fa805a #449da1 #ba8baf #86c1b9 #c5c8c6
+tin=                  #2e2e35 #8d534e #4e8d53 #888d4e #534e8d #8d4e88 #4e888d #ffffff   #000000 #b57d78 #78b57d #b0b578 #7d78b5 #b578b0 #78b0b5 #ffffff
+tomorrow_night=       #1d1f21 #cc6666 #b5bd68 #f0c674 #81a2be #b293bb #8abeb7 #fffefe   #000000 #cc6666 #b5bd68 #f0c574 #80a1bd #b294ba #8abdb6 #fffefe
+toychest=             #24364b #be2d26 #1a9172 #db8e27 #325d96 #8a5edc #35a08f #23d183   #336889 #dd5944 #31d07b #e7d84b #34a6da #ae6bdc #42c3ae #d5d5d5
+treehouse=            #191919 #b2270e #44a900 #aa820c #58859a #97363d #b25a1e #786b53   #433626 #ed5d20 #55f238 #f2b732 #85cfed #e14c5a #f07d14 #ffc800
+twilight=             #141414 #c06d44 #afb97a #c2a86c #44474a #b4be7c #778385 #ffffd4   #262626 #de7c4c #ccd88c #e2c47e #5a5e62 #d0dc8e #8a989b #ffffd4
+ubuntu=               #300a24 #cc0000 #4e9a06 #c4a000 #3465a4 #75507b #06989a #d3d7cf   #555753 #ef2929 #8ae234 #fce94f #729fcf #ad7fa8 #34e2e2 #eeeeec
+vaughn=               #25234f #705050 #60b48a #dfaf8f #5555ff #f08cc3 #8cd0d3 #709080   #709080 #dca3a3 #60b48a #f0dfaf #5555ff #ec93d3 #93e0e3 #ffffff
+vibrantink=           #000000 #ff6600 #ccff04 #ffcc00 #44b4cc #9933cc #44b4cc #ffffff   #555555 #ff0000 #00ff00 #ffff00 #0000ff #ff00ff #00ffff #e5e5e5
+vscode_dark=          #1e1e1e #e9653b #39e9a8 #e5b684 #44aae6 #e17599 #3dd5e7 #c3dde1   #598489 #e65029 #00ff9a #e89440 #009afb #ff578f #5fffff #d9fbff
+vscode_light=         #f9f9f9 #cd3232 #00bc00 #a5a900 #0752a8 #bc05bc #0598bc #343434   #5e5e5e #cd3333 #1bce1a #adbb5b #0752a8 #c451ce #52a8c7 #a6a3a6
+warmneon=             #404040 #e24346 #39b13a #dae145 #4261c5 #f920fb #2abbd4 #d0b8a3   #fefcfc #e97071 #9cc090 #ddda7a #7b91d6 #f674ba #5ed1e5 #d8c8bb
+wildcherry=           #1f1726 #d94085 #2ab250 #ffd16f #883cdc #ececec #c1b8b7 #fff8de   #009cc9 #da6bac #f4dca5 #eac066 #308cba #ae636b #ff919d #e4838d
+wombat=               #171717 #ff615a #b1e969 #ebd99c #5da9f6 #e86aff #82fff7 #dedacf   #313131 #f58c80 #ddf88f #eee5b2 #a5c7ff #ddaaff #b7fff9 #ffffff
+wryan=                #101010 #8c4665 #287373 #7c7c99 #395573 #5e468c #31658c #899ca1   #3d3d3d #bf4d80 #53a6a6 #9e9ecb #477ab3 #7e62b3 #6096bf #c0c0c0
+wzoreck=              #424043 #fc6386 #0e1416 #fce94f #fb976b #75507b #34e2e2 #ffffff   #989595 #fc6386 #a9dc76 #fce94f #fb976b #ab9df2 #34e2e2 #d1d1c0
+zenburn=              #3f3f3f #705050 #60b48a #f0dfaf #506070 #dc8cc3 #8cd0d3 #dcdccc   #709080 #dca3a3 #c3bf9f #e0cf9f #94bff3 #ec93d3 #93e0e3 #ffffff'
+
+unset SELECT
+
+if [ -n "$TTYSCHEME_LIST" ]; then
+    while IFS= read -r line; do
+	echo "${line%%=*}"
+    done <<EOF
+$COLORS
+EOF
+    exit 0
+elif [ -n "$1" ]; then
+    while IFS= read -r line; do
+	if [ "$1" = "${line%%=*}" ]; then
+	    SELECT="${line#*=}"
+	    break
+	fi
+    done <<EOF
+$COLORS
+EOF
+fi
+
+if [ -n "$SELECT" ]; then
+    set -- 0 1 2 3 4 5 6 7 8 9 A B C D E F
+
+    unset str
+    for col in $SELECT; do
+	str="${str}\033]P${1}${col#\#}"
+	shift
+    done
+
+    if [ -n "$TTYSCHEME_PRINT" ]; then
+	printf '%s' "printf '%b' '${str}'"
+	exit 0
+    else
+	# apply scheme
+	printf '%b' "$str"
+	# clear screen
+	command -v 'clear' >/dev/null &&
+	    clear ||
+		printf '%b' '\033[2J\033[H'
+    fi
+elif [ -n "$1" -o -z "${TTYSCHEME_ARRAY}${TTYSCHEME_ARRAY_SIMPLE}" ]; then
+    echo 'Invalid color scheme. Pass -l for a list of available schemes or -h for further help.'
+    exit 1
+fi
+
+if [ -n "$TTYSCHEME_ARRAY" ]; then
+    cnt=0
+    for bkgrnd in 40 41 42 43 44 45 46 47; do
+	printf '%b' "\033[${bkgrnd}m"
+	for bold in 22 1; do
+	    printf '%b' "\033[${bold}m"
+	    for frgrnd in 30 31 32 33 34 35 36 37; do
+		cntprt="$cnt"
+		while [ "${#cntprt}" -lt 3 ]; do
+		    cntprt=" ${cntprt}"
+		done
+		printf '%b' "\033[${frgrnd}m ${cntprt} "
+		cnt="$((cnt+1))"
+	    done
+	done
+	printf '%b\n' '\033[0m'
+    done
+elif [ -n "$TTYSCHEME_ARRAY_SIMPLE" ]; then
+    unset str
+    for bkgrnd in 40 41 42 43 44 45 46 47; do
+	str="${str}\033[${bkgrnd}m       "
+    done
+    str="${str}\033[0m"
+    for i in 1 2 3 4 5 6 7; do
+	printf '%b\n' "$str"
+    done
+fi
