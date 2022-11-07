@@ -21,6 +21,14 @@ ttyscheme nord
 ttyscheme -a
 ```
 
+## Persistency
+Append the following to your shell's configuration file:
+```bash
+if [ "$TERM" = linux ] && command -v ttyscheme >/dev/null; then
+	ttyscheme "$MY_SCHEME"
+fi
+```
+
 ## Gallery
 powershell
 ![screenshot_1](https://user-images.githubusercontent.com/113054217/200143732-222e1d59-d0c9-41ba-a3d7-d80f7c3f37c9.png)
