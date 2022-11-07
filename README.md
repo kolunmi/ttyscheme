@@ -1,6 +1,6 @@
 # ttyscheme
 
-ttyscheme features 150 popular terminal color schemes tuned specifically for use in the tty.
+ttyscheme features 150+ popular terminal color schemes tuned specifically for use in the tty.
 
 ## Installation
 ```bash
