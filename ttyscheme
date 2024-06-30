@@ -301,7 +301,7 @@ if [ -n "$SELECT" ]; then
 		printf '%b' '\033[2J\033[H'
     fi
 elif [ -n "$1" -o -z "${TTYSCHEME_ARRAY}${TTYSCHEME_ARRAY_SIMPLE}" ]; then
-    echo 'Invalid color scheme. Pass -l for a list of available schemes or -h for further help.'
+    echo 'Invalid color scheme. Pass -l for a list of available schemes or -h for further help.' 1>&2
     exit 1
 fi
 
